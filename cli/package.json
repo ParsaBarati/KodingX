@@ -1,0 +1,40 @@
+{
+  "name": "@lexaplus/kodingx",
+  "version": "0.1.0",
+  "description": "KodingX - Multi-agent software factory CLI by Lexaplus",
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "agency": "./index.js"
+  },
+  "scripts": {
+    "test": "node index.js"
+  },
+  "keywords": [
+    "ai",
+    "agents",
+    "cursor",
+    "claude",
+    "codex",
+    "automation",
+    "multi-agent",
+    "software-factory",
+    "kodingx",
+    "lexaplus"
+  ],
+  "author": "Lexaplus <hello@lexaplus.com> (https://lexaplus.com)",
+  "license": "MIT",
+  "homepage": "https://lexaplus.com/kodingx",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lexaplus/kodingx"
+  },
+  "bugs": {
+    "url": "https://github.com/lexaplus/kodingx/issues"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "inquirer": "^9.2.12",
+    "fs-extra": "^11.2.0"
+  }
+}
