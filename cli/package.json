@@ -1,11 +1,14 @@
 {
-  "name": "@lexaplus/kodingx",
-  "version": "0.1.0",
+  "name": "kodingx",
+  "version": "0.1.1",
   "description": "KodingX - Multi-agent software factory CLI by Lexaplus",
   "type": "module",
   "main": "index.js",
   "bin": {
     "agency": "./index.js"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "test": "node index.js"
