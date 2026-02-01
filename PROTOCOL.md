@@ -11,10 +11,10 @@ This spec uses **MUST / SHOULD / MAY** as defined in RFC-style conventions.
 
 ### In-scope
 
-* A universal `.agency/` folder that is the **single source of truth** (SSoT) for tasks, reports, verification, risks, decisions, and state.
+* A universal `.kodingx/` folder that is the **single source of truth** (SSoT) for tasks, reports, verification, risks, decisions, and state.
 * A CLI (`agency`) that:
 
-  * scaffolds `.agency/`
+  * scaffolds `.kodingx/`
   * creates/assigns tasks
   * reads reports
   * runs verification (DoD)
@@ -33,7 +33,7 @@ This spec uses **MUST / SHOULD / MAY** as defined in RFC-style conventions.
 ## 2) Core Principles (Non-negotiable)
 
 1. **Filesystem as API**: The protocol is expressed only via files and folders.
-2. **SSoT**: `.agency/STATE.md` is canonical; other views are derived.
+2. **SSoT**: `.kodingx/STATE.md` is canonical; other views are derived.
 3. **Async by default**: No requirement for same-session context.
 4. **Agent-agnostic**: Any model/tool can participate if it can read/write files.
 5. **Auditability**: Every "DONE" has evidence: report + verify output.
@@ -49,11 +49,13 @@ The Orchestrator coordinates work and is the **only role** permitted to mark tas
 
 Orchestrator MUST:
 
-* read tasks from inbox
-* dispatch tasks to builders
-* read builder reports from outbox
-* run `agency verify` for completion
-* update `.agency/STATE.md`
+* decompose user requests into atomic subtasks
+* create task files in `.kodingx/inbox/{agent}/`
+* **spawn builder agents via terminal** (see §3.4)
+* **watch outbox for completed reports** (see §3.5)
+* call auditor (Gemini) to verify work
+* run `agency verify` for DoD checks
+* update `.kodingx/STATE.md`
 * enforce scope and DoD
 
 Orchestrator MUST NOT:
@@ -74,14 +76,54 @@ Builder MUST:
 
 A human MAY act as orchestrator or builder, but MUST follow the same file contracts.
 
+### 3.4 Spawning Builder Agents (Terminal Dispatch)
+
+The Orchestrator MUST spawn builder agents via terminal commands. This enables:
+- Parallel execution of multiple builders
+- Non-blocking operation (Orchestrator doesn't wait)
+- Process isolation and auditability
+
+**Spawn Commands (Examples):**
+
+| Agent | Command |
+|-------|---------|
+| Claude Code | `claude --print "Read .kodingx/inbox/claude-code/ and execute."` |
+| Codex | `codex --approval-mode full-auto "Read .kodingx/inbox/codex/ and execute."` |
+| Aider | `aider --message "Read .kodingx/inbox/aider/ and execute."` |
+| Gemini | `gemini "Verify the report at .kodingx/outbox/ against acceptance criteria."` |
+| Playwright | `npx playwright test --grep "T{ID}"` |
+
+Each agent:
+1. Reads its inbox for task files
+2. Executes the work
+3. Writes report to its outbox
+4. Terminates (or signals completion)
+
+### 3.5 Watching for Results (Outbox Monitoring)
+
+The Orchestrator MUST monitor `.kodingx/outbox/` for new report files.
+
+**Options:**
+
+1. **MCP File Watcher (Recommended):** Set up filesystem MCP to trigger on new files in outbox.
+2. **Polling:** Periodically check outbox directories for new `.md` files.
+
+When a report arrives:
+1. Read the report file
+2. Parse status field (`READY_FOR_REVIEW` or `BLOCKED`)
+3. If `READY_FOR_REVIEW`: spawn Auditor (Gemini) for verification
+4. If verification passes: run `agency verify --task {ID}`
+5. If all checks pass: update task status to `DONE`
+6. If checks fail: create remediation subtask, assign back to builder
+
 ---
 
 ## 4) Directory Layout (Universal)
 
-`.agency/` MUST exist at repo root.
+`.kodingx/` MUST exist at repo root.
 
 ```
-.agency/
+.kodingx/
   agency.json                 # Manifest (machine-readable)
   PROTOCOL.md                 # Human-readable protocol summary (optional but recommended)
   STATE.md                    # Canonical project state (SSoT)
@@ -147,7 +189,7 @@ A human MAY act as orchestrator or builder, but MUST follow the same file contra
 ### 6.1 Location
 
 Tasks MUST be created at:
-`/.agency/inbox/{agent}/{YYYY-MM-DD}/T{ID}-{HHMM}-{slug}.md`
+`/.kodingx/inbox/{agent}/{YYYY-MM-DD}/T{ID}-{HHMM}-{slug}.md`
 
 ### 6.2 Frontmatter Schema (Required)
 
@@ -226,7 +268,7 @@ labels: ["bug", "accounting"]
 ### 7.1 Location
 
 Reports MUST be created at:
-`/.agency/outbox/{agent}/{YYYY-MM-DD}/T{ID}-{HHMM}-{slug}-report.md`
+`/.kodingx/outbox/{agent}/{YYYY-MM-DD}/T{ID}-{HHMM}-{slug}-report.md`
 
 ### 7.2 Frontmatter Schema (Required)
 
@@ -307,7 +349,7 @@ last_verify:
   task_id: "T0007"
   timestamp: "2026-01-31T16:58:00+01:00"
   result: "pass"
-  artifact_path: ".agency/verify/2026-01-31/T0007-1610-fix-vat.verify.json"
+  artifact_path: ".kodingx/verify/2026-01-31/T0007-1610-fix-vat.verify.json"
 ---
 
 ## Current Focus
@@ -390,7 +432,7 @@ If a task sets `dod_profile: auto`, CLI SHOULD detect environment by repo signal
 ### 11.1 Deterministic Output Artifact
 
 `agency verify --task T0007` MUST write a JSON artifact to:
-`.agency/verify/YYYY-MM-DD/{task_filename}.verify.json`
+`.kodingx/verify/YYYY-MM-DD/{task_filename}.verify.json`
 
 Example:
 
@@ -434,7 +476,7 @@ Adapters MUST encode:
 
 The CLI generates **tool-native rule/config files** that "teach" the selected orchestrator how to operate the Agency protocol.
 
-Universal `.agency/` stays identical. Only glue files vary.
+Universal `.kodingx/` stays identical. Only glue files vary.
 
 ### 12.2 Inputs to `agency init`
 
@@ -446,7 +488,7 @@ Universal `.agency/` stays identical. Only glue files vary.
 
 ### 12.3 Outputs
 
-* Always: `.agency/` scaffold + templates + DoD profiles
+* Always: `.kodingx/` scaffold + templates + DoD profiles
 * Plus: tool-specific adapter file(s)
 
 ---
@@ -456,7 +498,7 @@ Universal `.agency/` stays identical. Only glue files vary.
 Every adapter MUST include, in tool-native format:
 
 1. **Role Declaration**
-   "You are the Orchestrator. You coordinate via `.agency/`."
+   "You are the Orchestrator. You coordinate via `.kodingx/`."
 
 2. **Operating Loop (Always-on routine)**
 
@@ -496,15 +538,15 @@ Minimum required content (conceptual; exact formatting may vary):
 # Agency Orchestrator Rules
 
 ## Role
-You are the Orchestrator. Coordinate work via `.agency/`. Do not implement large changes directly.
+You are the Orchestrator. Coordinate work via `.kodingx/`. Do not implement large changes directly.
 
 ## Operating Loop (always)
-1) Read `.agency/STATE.md` and `.agency/TASK_BOARD.md`
-2) Scan `.agency/inbox/**` for NEW/BLOCKED tasks
-3) Create/Update tasks in `.agency/inbox/{agent}/YYYY-MM-DD/T{ID}-{HHMM}-{slug}.md`
-4) Read builder reports in `.agency/outbox/{agent}/YYYY-MM-DD/`
+1) Read `.kodingx/STATE.md` and `.kodingx/TASK_BOARD.md`
+2) Scan `.kodingx/inbox/**` for NEW/BLOCKED tasks
+3) Create/Update tasks in `.kodingx/inbox/{agent}/YYYY-MM-DD/T{ID}-{HHMM}-{slug}.md`
+4) Read builder reports in `.kodingx/outbox/{agent}/YYYY-MM-DD/`
 5) Run `agency verify --task {ID}` (or equivalent DoD commands)
-6) Update `.agency/STATE.md`
+6) Update `.kodingx/STATE.md`
 7) Mark DONE only when verify passes and report is read
 
 ## Never
@@ -521,7 +563,7 @@ You are the Orchestrator. Coordinate work via `.agency/`. Do not implement large
 ### 15.1 Required Commands
 
 * `agency init`
-  scaffolds `.agency/` + generates adapters
+  scaffolds `.kodingx/` + generates adapters
 * `agency task new` (or `agency assign`)
   creates a task file with correct schema + ID allocation
 * `agency status`
@@ -589,7 +631,7 @@ Adapters MUST enforce:
 
 A project is compliant if:
 
-* `.agency/` matches §4 structure
+* `.kodingx/` matches §4 structure
 * tasks/reports match §6/§7 schema
 * `STATE.md` is present and updated by orchestrator
 * verify artifacts exist for DONE tasks
@@ -768,7 +810,7 @@ Before installation, CLI MUST detect:
 
 1. **Never overwrite** existing files without `--force`
 2. **Append-only** for adapter files (add section, don't replace)
-3. **Create `.agency/`** as new directory (fails if exists without `--force`)
+3. **Create `.kodingx/`** as new directory (fails if exists without `--force`)
 4. **Preserve git history** - no automatic commits
 5. **No runtime dependencies** - CLI is install-time only
 
@@ -831,7 +873,7 @@ Full:   agency upgrade --full
 
 A project is compliant if:
 
-* `.agency/` matches §4 structure
+* `.kodingx/` matches §4 structure
 * tasks/reports match §6/§7 schema (including optional `risks` field)
 * `STATE.md` is present and updated by orchestrator
 * verify artifacts exist for DONE tasks

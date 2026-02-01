@@ -1,0 +1,14 @@
+# Archive
+# Old inbox/outbox date folders go here
+#
+# Structure:
+#   archive/
+#   ├── inbox/
+#   │   ├── claude/2026-01-15/
+#   │   └── claude/2026-01-16/
+#   └── outbox/
+#       ├── claude/2026-01-15/
+#       └── claude/2026-01-16/
+#
+# Retention: Keep active last 7 days, archive older
+# Or delete (git history preserves everything)

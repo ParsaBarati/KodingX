@@ -1,0 +1,9 @@
+# Kilo Code Outbox
+# Coordination reports from Kilo go here
+#
+# Structure:
+#   kilo/
+#   └── 2026-01-31/         # Date folder (YYYY-MM-DD)
+#       └── batch-001-1045.md  # Batch completed at 10:45
+#
+# Naming: {type}-{ID}-{HHMM}.md (completion time, 24-hour)

@@ -1,0 +1,10 @@
+# Playwright Outbox
+# E2E test results go here
+#
+# Structure:
+#   playwright/
+#   └── 2026-01-31/         # Date folder (YYYY-MM-DD)
+#       ├── T001-1045.md    # E2E for T001 at 10:45
+#       └── flow-login-1100.md  # Login flow test at 11:00
+#
+# Naming: {task|flow}-{ID}-{HHMM}.md (24-hour time)

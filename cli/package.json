@@ -1,6 +1,6 @@
 {
   "name": "kodingx",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "KodingX - Multi-agent software factory CLI by Lexaplus",
   "type": "module",
   "main": "index.js",
@@ -30,10 +30,10 @@
   "homepage": "https://lexaplus.com/kodingx",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lexaplus/kodingx"
+    "url": "https://github.com/parsabarati/kodingx.git"
   },
   "bugs": {
-    "url": "https://github.com/lexaplus/kodingx/issues"
+    "url": "https://github.com/parsabarati/kodingx/issues"
   },
   "dependencies": {
     "chalk": "^5.3.0",

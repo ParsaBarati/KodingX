@@ -1,0 +1,9 @@
+# Gemini Inbox
+# Analysis requests for Gemini go here
+#
+# Structure:
+#   gemini/
+#   └── 2026-01-31/         # Date folder (YYYY-MM-DD)
+#       └── T001-1030.md    # Analysis request at 10:30
+#
+# Naming: T{ID}-{HHMM}.md (24-hour time)

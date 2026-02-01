@@ -1,0 +1,9 @@
+# Kilo Code Inbox
+# Parallel execution tasks for Kilo go here
+#
+# Structure:
+#   kilo/
+#   └── 2026-01-31/         # Date folder (YYYY-MM-DD)
+#       └── batch-001-1030.md  # Batch task at 10:30
+#
+# Naming: {type}-{ID}-{HHMM}.md (24-hour time)
