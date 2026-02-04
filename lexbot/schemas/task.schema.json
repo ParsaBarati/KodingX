@@ -1,0 +1,164 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "lexbot.task.schema.json",
+  "title": "Lexbot Task",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "task_id",
+    "created_at",
+    "source",
+    "requestor",
+    "title",
+    "description",
+    "repo_root",
+    "task_type",
+    "risk_class",
+    "pipeline_id",
+    "priority",
+    "constraints",
+    "inputs",
+    "dispatch",
+    "status"
+  ],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "parent_task_id": {
+      "type": ["string", "null"]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source": {
+      "type": "string",
+      "enum": ["telegram", "self"]
+    },
+    "requestor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["chat_id"],
+      "properties": {
+        "chat_id": {
+          "type": ["string", "number"]
+        },
+        "username": {
+          "type": "string"
+        }
+      }
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "raw_text_ref": {
+      "type": ["string", "null"]
+    },
+    "acceptance": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "selector_meta": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "repo_root": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_type": {
+      "type": "string",
+      "enum": ["code", "verify", "docs", "infra", "data", "ops"]
+    },
+    "risk_class": {
+      "type": "string",
+      "enum": ["safe_read", "safe_write", "risky_write", "destructive"]
+    },
+    "pipeline_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["P0", "P1", "P2", "P3"]
+    },
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["no_destructive_without_approval", "max_time_minutes", "max_retries"],
+      "properties": {
+        "no_destructive_without_approval": { "type": "boolean" },
+        "max_time_minutes": { "type": "number", "minimum": 1 },
+        "max_retries": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "inputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["paths_hint", "keywords", "refs"],
+      "properties": {
+        "paths_hint": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "keywords": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "refs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind", "path"],
+            "properties": {
+              "kind": { "type": "string" },
+              "path": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "dispatch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["primary_agent", "concurrency_group"],
+      "properties": {
+        "primary_agent": { "type": "string", "minLength": 1 },
+        "verify_agent": { "type": "string" },
+        "heal_agent": { "type": "string" },
+        "concurrency_group": { "type": "string", "minLength": 1 }
+      }
+    },
+    "status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "attempt", "last_error_signature"],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": ["queued", "running", "blocked", "done", "failed", "needs_approval"]
+        },
+        "attempt": { "type": "integer", "minimum": 0 },
+        "last_error_signature": { "type": ["string", "null"] },
+        "pipeline": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "stage": { "type": "string" },
+            "verify_task_id": { "type": ["string", "null"] },
+            "heal_task_id": { "type": ["string", "null"] },
+            "parent_task_id": { "type": ["string", "null"] }
+          }
+        }
+      }
+    }
+  }
+}

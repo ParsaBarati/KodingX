@@ -21,6 +21,14 @@ This is not "using an AI coding assistant." This is a **complete production syst
 
 ---
 
+## Version & Protocol (Current)
+
+- **Protocol:** KodingX Agency Protocol v1.0 Draft (`PROTOCOL.md`)
+- **Runtime:** Lexbot orchestration protocol (`LEXBOT_SPEC.md`)
+- **Autonomy Status:** Becoming fully autonomous with guardrails (self-tasking + scheduling + verification, with human approval required for risky changes)
+
+---
+
 ## The Core Principle: Filesystem Over Chat
 
 **Agents never communicate directly. Everything goes through files.**
@@ -72,6 +80,12 @@ Each agent run is **stateless**. All context comes from files.
 ## Quick Start
 
 > **New to KodingX?** See [`QUICKSTART_MINIMAL.md`](QUICKSTART_MINIMAL.md) for a 5-minute setup with just the essentials.
+
+### Lexbot Simple Setup
+
+For the deterministic orchestration runtime (Telegram polling + scheduler), see `LEXBOT_SETUP.md`.
+
+For automated agents, see `LEXBOT_AGENT_GUIDE.md`.
 
 ### Install CLI
 

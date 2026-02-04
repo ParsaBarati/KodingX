@@ -1,0 +1,14 @@
+[Unit]
+Description=Lexbot (KodingX) - deterministic orchestrator
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/kodingx
+ExecStart=/usr/bin/node /opt/kodingx/lexbot/src/index.js
+Restart=always
+RestartSec=5
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
