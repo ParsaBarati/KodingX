@@ -16,6 +16,14 @@ This is not "using an AI coding assistant." This is a **complete production syst
 - **Agents** operate on tasks via deterministic protocols
 - **Truth** is verified via automated tests + browser reality checks
 - The system runs in a **self-healing loop** until "Definition of Done" is satisfied
+- The orchestrator can take **one initial input** and then **run autonomously**, spawning tasks and coordinating agents without further prompts (within guardrails)
+
+Example (one prompt → autonomous run):
+
+```text
+User: "Add CI checks, update docs, and ship v2.0.0."
+Orchestrator: creates tasks → dispatches agents → verifies results → updates STATE/TASK_BOARD → reports completion
+```
 
 **Key Outcome:** Software delivery becomes an orchestrated pipeline, not a single developer's session.
 
@@ -92,6 +100,8 @@ For automated agents, see `LEXBOT_AGENT_GUIDE.md`.
 ```bash
 npm install -g @lexaplus/kodingx
 ```
+
+This install includes the full KodingX stack: Agency protocol/docs and the Lexbot runtime.
 
 ### New Project
 
